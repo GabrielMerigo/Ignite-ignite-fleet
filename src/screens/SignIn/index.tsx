@@ -25,8 +25,11 @@ export function SignIn() {
 
       const { idToken } = await GoogleSignin.signIn();
 
+
       if(idToken) {
-        
+        const credentials = Realm.Credentials.jwt(idToken);
+
+        await app.logIn(credentials);
       }else {
         Alert.alert('Ocorreu um erro...')
       }
@@ -35,7 +38,6 @@ export function SignIn() {
       console.log(error);
     }finally {
       setIsAuthenticating(false);
-      Alert.alert('Ocorreu um erro...')
     }
   }
 
