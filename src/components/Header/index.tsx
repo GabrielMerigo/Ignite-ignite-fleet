@@ -1,30 +1,32 @@
 import { TouchableOpacity } from 'react-native'
 import { Power } from 'phosphor-react-native'
+import { useUser, useApp } from '@realm/react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Container, Greeting, Message, Name, Picture } from './styles';
-import { useApp, useUser } from '@realm/react';
 
 import theme from '../../theme';
-
 
 export function Header() {
   const user = useUser();
   const app = useApp();
+  const insets = useSafeAreaInsets();
 
-  function handleLogout() {
+  const paddingTop = insets.top + 32;
+
+  function handleLogOut() {
     app.currentUser?.logOut();
   }
 
   return (
-    <Container>
+    <Container style={{ paddingTop }}>
       <Picture 
-        source={{ uri: user.profile.pictureUrl }}
+        source={{ uri: user?.profile.pictureUrl }}
         placeholder='L184i9ofbHof00ayjsay~qj[ayj@'
       />
       <Greeting>
-
         <Message>
-          Olá,
+          Olá
         </Message>
 
         <Name>
@@ -32,7 +34,7 @@ export function Header() {
         </Name>
       </Greeting>
 
-      <TouchableOpacity onPress={handleLogout} activeOpacity={0.7}>
+      <TouchableOpacity activeOpacity={0.7} onPress={handleLogOut}>
         <Power size={32} color={theme.COLORS.GRAY_400} />
       </TouchableOpacity>
     </Container>
