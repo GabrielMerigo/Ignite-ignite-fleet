@@ -12,6 +12,7 @@ import { Routes } from './src/routes';
 
 import { SignIn } from './src/screens/SignIn';
 import { Loading } from './src/components/Loading';
+import { RealmProvider } from './src/libs/realm';
 
 export default function App() {
 
@@ -36,11 +37,12 @@ export default function App() {
             translucent 
           />
           <UserProvider fallback={SignIn}>
-            <Routes />
+            <RealmProvider>
+              <Routes />
+            </RealmProvider>
           </UserProvider>
         </SafeAreaProvider>
       </ThemeProvider>
     </AppProvider>
-    
   );
 }
