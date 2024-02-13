@@ -27,7 +27,7 @@ export class Historic extends Realm.Object<Historic> {
     };
   }
 
-  static schema = {
+  static schema: Realm.ObjectSchema = {
     name: 'Historic',
     primaryKey: '_id',
 

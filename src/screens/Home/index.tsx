@@ -1,10 +1,16 @@
-import { Header } from '../../components/Header';
-import { Container } from './styles'
+import { Container, Content } from './styles';
 
-export const Home = () => {
+import { Header } from '../../components/Header';
+import { CarStatus } from '../../components/CarStatus';
+
+export function Home() {
   return (
     <Container>
       <Header />
+
+      <Content>
+        <CarStatus licensePlate="XXX-1234" />
+      </Content>
     </Container>
   );
 }
