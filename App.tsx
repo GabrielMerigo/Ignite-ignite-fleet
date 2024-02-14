@@ -9,10 +9,10 @@ import theme from './src/theme';
 import { REALM_APP_ID } from '@env';
 
 import { Routes } from './src/routes';
+import { RealmProvider } from './src/libs/realm';
 
 import { SignIn } from './src/screens/SignIn';
 import { Loading } from './src/components/Loading';
-import { RealmProvider } from './src/libs/realm';
 
 export default function App() {
 
@@ -30,7 +30,7 @@ export default function App() {
   return (
     <AppProvider id={REALM_APP_ID}>
       <ThemeProvider theme={theme}>
-        <SafeAreaProvider>
+        <SafeAreaProvider style={{ backgroundColor: theme.COLORS.GRAY_800 }}>
           <StatusBar 
             barStyle="light-content" 
             backgroundColor="transparent" 
@@ -44,5 +44,6 @@ export default function App() {
         </SafeAreaProvider>
       </ThemeProvider>
     </AppProvider>
+    
   );
 }
