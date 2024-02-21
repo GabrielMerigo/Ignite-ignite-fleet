@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Alert, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '@realm/react';
+import Toast from 'react-native-toast-message';
 
 import { useQuery, useRealm } from '../../libs/realm';
 import { Historic } from '../../libs/realm/schemas/Historic';
@@ -13,11 +14,14 @@ import { CarStatus } from '../../components/CarStatus';
 import { Container, Content, Label, Title } from './styles';
 import { HistoricCard, HistoricCardProps } from '../../components/HistoricCard';
 import { getLastAsyncTimeStamp, saveLastSyncTimeStamp } from '../../libs/async-storage';
+import { TopMessage } from '../../components/TopMessage';
+import { CloudArrowUp } from 'phosphor-react-native';
 
 export function Home() {
   const realm = useRealm();
   const [vehicleHistoric, setVehicleHistoric] = useState<HistoricCardProps[]>([]);
   const [vehicleInUse, setVehicleInUse] = useState<Historic | null>(null);
+  const [percentageToSync, setPercentageToSync] = useState<string | null>(null);
   const user = useUser();
 
   const { navigate } = useNavigation();
@@ -77,7 +81,6 @@ export function Home() {
       setVehicleHistoric(formattedHistoric);
     } catch (error) {
       console.log(error);
-      Alert.alert('Histórico', 'Não foi possível carregar o histórico.')
     }
   }
 
@@ -88,6 +91,14 @@ export function Home() {
     if(percentage === 100) {
       await saveLastSyncTimeStamp();
       fetchHistoric();
+      Toast.show({
+        type: 'info',
+        text1: 'Todos os dados estão sincronizado.'
+      })
+    }
+
+    if(percentage < 100) {
+      setPercentageToSync(`${percentage.toFixed(0)}% sincronizado.`)
     }
   }
 
@@ -121,6 +132,10 @@ export function Home() {
 
   return (
     <Container>
+      {
+        percentageToSync && <TopMessage title={percentageToSync} icon={CloudArrowUp} />
+      }
+
       <Header />
 
       <Content>
