@@ -84,6 +84,7 @@ export function Arrival() {
         <Description>
           {historic?.description}
         </Description>
+        </Content>
 
         <Footer>
           <ButtonIcon 
@@ -93,7 +94,6 @@ export function Arrival() {
 
           <Button title='Registrar chegada' onPress={handleArrivalRegister} />
         </Footer>
-      </Content>
     </Container>
   );
 }
