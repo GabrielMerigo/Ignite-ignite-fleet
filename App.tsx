@@ -6,6 +6,7 @@ import { StatusBar } from 'react-native';
 import { AppProvider, UserProvider } from '@realm/react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts, Roboto_400Regular, Roboto_700Bold } from '@expo-google-fonts/roboto';
+import { useNetInfo } from '@react-native-community/netinfo'
 
 
 import theme from './src/theme';
@@ -17,8 +18,11 @@ import { RealmProvider, syncConfig } from './src/libs/realm';
 
 import { SignIn } from './src/screens/SignIn';
 import { Loading } from './src/components/Loading';
+import { TopMessage } from './src/components/TopMessage';
+import { WifiSlash } from 'phosphor-react-native';
 
 export default function App() {
+  const { isConnected } = useNetInfo();
 
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
@@ -35,6 +39,10 @@ export default function App() {
     <AppProvider id={REALM_APP_ID}>
       <ThemeProvider theme={theme}>
         <SafeAreaProvider style={{ backgroundColor: theme.COLORS.GRAY_800 }}>
+          {!isConnected && <TopMessage 
+            title='Você está off-line'
+            icon={WifiSlash}
+          />}
           <StatusBar 
             barStyle="light-content" 
             backgroundColor="transparent" 
