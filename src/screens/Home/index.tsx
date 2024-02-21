@@ -12,6 +12,7 @@ import { CarStatus } from '../../components/CarStatus';
 
 import { Container, Content, Label, Title } from './styles';
 import { HistoricCard, HistoricCardProps } from '../../components/HistoricCard';
+import { getLastAsyncTimeStamp, saveLastSyncTimeStamp } from '../../libs/async-storage';
 
 export function Home() {
   const realm = useRealm();
@@ -59,14 +60,16 @@ export function Home() {
     };
   },[])
 
-  function fetchHistoric() {
+  async function fetchHistoric() {
+    const lastSync = await getLastAsyncTimeStamp();
+
     try {
       const response = historic.filtered("status='arrival' SORT(created_at DESC)");
       const formattedHistoric = response.map((item) => {
         return ({
           id: item._id.toString(),
           licensePlate: item.license_plate,
-          isSync: false,
+          isSync: lastSync > item.updated_at!.getTime(),
           created: dayjs(item.created_at).format('[Saída em] DD/MM/YYYY [às] HH:mm')
 
         })
@@ -75,6 +78,16 @@ export function Home() {
     } catch (error) {
       console.log(error);
       Alert.alert('Histórico', 'Não foi possível carregar o histórico.')
+    }
+  }
+
+  // função que verifica o progresso de transferimento dos dados para o banco remoto
+  async function progressNotification(transferred: number, transferable: number) {
+    const percentage = (transferred/transferable) * 100;
+
+    if(percentage === 100) {
+      await saveLastSyncTimeStamp();
+      fetchHistoric();
     }
   }
 
@@ -88,6 +101,22 @@ export function Home() {
 
       mutableSubs.add(historicByUserQuery, { name: 'historic_by_user' });
     })
+  }, [realm])
+
+  useEffect(() => {
+    const syncSession = realm.syncSession;
+
+    if (!syncSession) {
+      return;
+    }
+
+    syncSession.addProgressNotification(
+      Realm.ProgressDirection.Upload,
+      Realm.ProgressMode.ReportIndefinitely,
+      progressNotification
+    );
+
+    return () => syncSession.removeProgressNotification(progressNotification)
   }, [realm])
 
   return (
