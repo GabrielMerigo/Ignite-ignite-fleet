@@ -12,7 +12,12 @@ import { licensePlateValidate } from '../../utils/licensePlateValidate';
 import { MainHeader } from '../../components/MainHeader';
 import { Historic } from '../../libs/realm/schemas/Historic';
 import { useNavigation } from '@react-navigation/native';
-import { useForegroundPermissions } from 'expo-location';
+
+import { LocationAccuracy,
+   useForegroundPermissions,
+   watchPositionAsync, 
+  LocationSubscription
+ } from 'expo-location';
 
 
 const keyboardAvoidingViewBehavior = Platform.OS === 'android' ? 'height' : 'position';
@@ -66,6 +71,26 @@ export function Departure() {
   useEffect(() => {
     requestLocationForegroundPermission();
   }, [])
+
+  useEffect(() => {
+    if(!locationForegroundPermission?.granted) {
+      return;
+    }
+
+    let subscription: LocationSubscription
+
+
+    // Obtendo localização do usuário
+    watchPositionAsync({
+      accuracy: LocationAccuracy.High,
+      timeInterval: 1000,
+    }, (location) => {
+      console.log('test', location);
+    })
+      .then((response) => subscription = response);
+
+    return () =>  subscription.remove();
+  }, [locationForegroundPermission])
 
 
   if(!locationForegroundPermission?.granted) {
